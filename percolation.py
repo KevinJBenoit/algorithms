@@ -2,7 +2,9 @@ class QuickFind:
     def __init__(self, n):
         self.count = n
         self.id = [x for x in range(n)]
-    
+    def __str__(self):
+        return f"Count: {self.count} matrix: {self.id}"
+
     def counts(self):
         return self.count
 
@@ -32,6 +34,10 @@ class QuickFind:
 
 test = QuickFind(5)
 test.connected(1, 3)
+test.union(1, 3)
+print(test.connected(1, 3))
+print(test)
+
 # class QuickUnion:
 #     def __init__(self, n):
 
