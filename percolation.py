@@ -39,6 +39,10 @@ class WeightedQuickUnionUF:
     def __str__(self):
         return f"Count: {self.count} parents: {self.parent} size: {self.size}"
 
+    def validate(self, p):
+        if p < 0 or p > self.count:
+            raise Exception('not valid')
+    
     def find(self, p):
         while (p != self.parent[p]):
             p = self.parent[p]
@@ -65,64 +69,60 @@ class WeightedQuickUnionUF:
         self.count -= 1
 
 
-test = WeightedQuickUnionUF(10)
+class Percolation:
+    def __init__(self, n):
+        self.grid = n*n
+        self.n = n
+        self.matrix = WeightedQuickUnionUF(n*n)
 
-print(test)
-test.union(2, 6)
-test.union(7, 4)
-test.union(5, 7)
-test.union(6, 9)
-print(test)
-
-# class Percolation:
-#     def __init__(self, n):
-#         self.n = n
-#         self.grid = [[[False] for x in range(1, n+1)] for y in range(1, n+1)]
-#     def __str__(self):
-#         return str(self.grid)
+    def __str__(self):
+        return str(self.matrix)
     
-#     # # opens the site (row, col) if it is not open already
-#     def open(self, row, col):
-#         #connect south
-#         if self.grid[row+1][col] and not connected(self.grid[row+1][col], self.grid[row][col]):
-#             union(self.grid[row+1][col], self.grid[row][col])
-#         #connect north
-#         if self.grid[row-1][col] and not connected(self.grid[row-1][col], self.grid[row][col]):
-#             union(self.grid[row-1][col], self.grid[row][col])
-#         #connect east
-#         if self.grid[row][col+1] and not connected(self.grid[row][col+1], self.grid[row][col]):
-#             union(self.grid[row][col+1], self.grid[row][col])
-#         #connect west
-#         if self.grid[row][col-1] and not connected(self.grid[row][col-1], self.grid[row][col]):
-#             union(self.grid[row][col-1], self.grid[row][col])
+    # opens the site (row, col) if it is not open already
+    def open(self, row, col):
+        site = row*self.n + col
+
+        self.matrix.validate(site)
+
+        #connect south
+        if not self.matrix.connected(site, site + self.n) and row != self.n-1:
+            self.matrix.union(site, site + self.n)
+        #connect north
+        if not self.matrix.connected(site, site - self.n) and row != 0:
+            self.matrix.union(site, site - self.n)
+        #connect east
+        if not self.matrix.connected(site, site + 1) and col != self.n-1:
+            self.matrix.union(site, site +1)
+        #connect west
+        if not self.matrix.connected(site, site - 1) and col != 0:
+            self.matrix.union(site, site - 1)
 
         
-#     # # is the site (row, col) open?
-#     def isOpen(self, row, col):
-#         if self.grid[row][col] == True:
-#             return True
-#         else:
-#             return False
+    # # # is the site (row, col) open?
+    # def isOpen(self, row, col):
+    #     if self.grid[row][col] == True:
+    #         return True
+    #     else:
+    #         return False
 
-#     # # is the site (row, col) full?
-#     # def isFull(self, row, col):
+    # # # is the site (row, col) full?
+    # # def isFull(self, row, col):
         
-#     # # returns the number of open sites
-#     def numberOfOpenSites(self):
-#         count = 0
-#         for row in range(self.n):
-#             for col in range(self.n):
-#                 if self.grid[row][col] == True:
-#                     count += 1
+    # # # returns the number of open sites
+    # def numberOfOpenSites(self):
+    #     count = 0
+    #     for row in range(self.n):
+    #         for col in range(self.n):
+    #             if self.grid[row][col] == True:
+    #                 count += 1
 
-#         return count
+    #     return count
 
-#     # # does the system percolate?
-#     # def percolates()
+    # # # does the system percolate?
+    # # def percolates()
 
-# perc = Percolation(10)
+perc = Percolation(5)
 
-# perc.open(4,2)
+perc.open(1, 4)
 
-# print(perc.numberOfOpenSites())
-# print(perc)
+print(perc)
