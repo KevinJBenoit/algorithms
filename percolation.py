@@ -31,19 +31,48 @@ class QuickFind:
                 self.id[index] = qID
         self.count -= 1
 
+class WeightedQuickUnionUF:
+    def __init__(self, n):
+        self.count = n
+        self.parent = [x for x in range(n)]
+        self.size = [1 for x in range(n)]
+    def __str__(self):
+        return f"Count: {self.count} parents: {self.parent} size: {self.size}"
 
-test = QuickFind(5)
-test.connected(1, 3)
-test.union(1, 3)
-print(test.connected(1, 3))
+    def find(self, p):
+        while (p != self.parent[p]):
+            p = self.parent[p]
+        return p
+
+    def connected(self, p, q):
+        return self.find(p) == self.find(q)
+
+    def union(self, p, q):
+        rootP = self.find(p)
+        rootQ = self.find(q)
+
+        if rootP == rootQ:
+            return
+        
+        #weighted union, making smaller root point to the larger one
+        if self.size[rootP] < self.size[rootQ]:
+            self.parent[rootP] = rootQ
+            self.size[rootQ] += self.size[rootP]
+        else:
+            self.parent[rootQ] = rootP
+            self.size[rootP] += self.size[rootQ]
+
+        self.count -= 1
+
+
+test = WeightedQuickUnionUF(10)
+
 print(test)
-
-# class QuickUnion:
-#     def __init__(self, n):
-
-
-
-
+test.union(2, 6)
+test.union(7, 4)
+test.union(5, 7)
+test.union(6, 9)
+print(test)
 
 # class Percolation:
 #     def __init__(self, n):
