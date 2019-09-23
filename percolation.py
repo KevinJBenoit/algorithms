@@ -74,55 +74,115 @@ class Percolation:
         self.grid = n*n
         self.n = n
         self.matrix = WeightedQuickUnionUF(n*n)
+        self.flows = []
 
     def __str__(self):
         return str(self.matrix)
     
+    def flowing(self, newSite, oldSite):
+        for flow in self.flows:
+                if oldSite in flow:
+                    flow.append(newSite)
+
     # opens the site (row, col) if it is not open already
     def open(self, row, col):
+        self.matrix.validate(row)
+        self.matrix.validate(col)
+
         site = row*self.n + col
 
-        self.matrix.validate(site)
-
         #connect south
-        if not self.matrix.connected(site, site + self.n) and row != self.n-1:
-            self.matrix.union(site, site + self.n)
+        if site + self.n < self.n*self.n:
+            southSite= site + self.n
+            if not self.matrix.connected(site, southSite) and row != self.n-1:
+                self.matrix.union(site, southSite)
+            self.flowing(site, southSite)
+
         #connect north
-        if not self.matrix.connected(site, site - self.n) and row != 0:
-            self.matrix.union(site, site - self.n)
+        if row != 0:
+            northSite = site - self.n
+            if not self.matrix.connected(site, northSite) and row != 0:
+                self.matrix.union(site, northSite)
+            self.flowing(site, northSite)
+
         #connect east
-        if not self.matrix.connected(site, site + 1) and col != self.n-1:
-            self.matrix.union(site, site +1)
+        if site + self.n < self.n*self.n and col != self.n-1:
+            eastSite = site + 1
+            if not self.matrix.connected(site, eastSite):
+                self.matrix.union(site, eastSite)
+            self.flowing(site, eastSite)
+
         #connect west
-        if not self.matrix.connected(site, site - 1) and col != 0:
-            self.matrix.union(site, site - 1)
+        if col != 0:
+            westSite = site - 1
+            if not self.matrix.connected(site, westSite):
+                self.matrix.union(site, westSite)
+            self.flowing(site, westSite)
+
+        if site > 0 and site < self.n:
+            newFlow = [site]
+            self.flows.append(newFlow)
 
         
-    # # # is the site (row, col) open?
-    # def isOpen(self, row, col):
-    #     if self.grid[row][col] == True:
-    #         return True
-    #     else:
-    #         return False
+    # # is the site (row, col) open?
+    def isOpen(self, row, col) -> bool:
+        self.matrix.validate(row)
+        self.matrix.validate(col)
 
-    # # # is the site (row, col) full?
-    # # def isFull(self, row, col):
+        site = row*self.n + col
+
+        #check south
+        if self.matrix.connected(site, site + self.n) and row != self.n-1:
+            return  True
+        #check north
+        if self.matrix.connected(site, site - self.n) and row != 0:
+            return  True
+        #check east
+        if self.matrix.connected(site, site + 1) and col != self.n-1:
+            return  True
+        #check west
+        if self.matrix.connected(site, site - 1) and col != 0:
+            return  True
+
+
+    # is the site (row, col) full?
+    def isFull(self, row, col) -> bool:
+        self.matrix.validate(row)
+        self.matrix.validate(col)
+
+        site = row*self.n + col
+
+        for flow in self.flows:
+            for flowSite in flow:
+                if site == flowSite:
+                    return True
+        return False
         
-    # # # returns the number of open sites
-    # def numberOfOpenSites(self):
-    #     count = 0
-    #     for row in range(self.n):
-    #         for col in range(self.n):
-    #             if self.grid[row][col] == True:
-    #                 count += 1
+        
+    # # returns the number of open sites
+    def numberOfOpenSites(self):
+        counter = 0
+        
+        for row in range(self.n-1):
+            for col in range(self.n-1):
+                if self.isOpen(row, col):
+                    counter += 1
+        return counter
 
-    #     return count
-
-    # # # does the system percolate?
-    # # def percolates()
+    # does the system percolate?
+    def percolates(self):
+        #check if any sites on the bottom row are full
+        for col in range(self.n):
+            if self.isFull(self.n-1, col):
+                return True
+        return False
 
 perc = Percolation(5)
 
+perc.open(0, 4)
 perc.open(1, 4)
+perc.open(2, 4)
+perc.open(3, 4)
+perc.open(4, 4)
 
-print(perc)
+print(perc.percolates())
