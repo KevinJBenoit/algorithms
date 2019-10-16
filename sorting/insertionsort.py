@@ -11,8 +11,6 @@ def insertionSort(arrayIn):
         i = marker
         j = i - 1
         while j >= 0:
-            leftval = arrayIn[j]
-            rightval = arrayIn[i]
             if arrayIn[i] < arrayIn[j]:
                 arrayIn[i], arrayIn[j] = arrayIn[j], arrayIn[i]
                 j -= 1
